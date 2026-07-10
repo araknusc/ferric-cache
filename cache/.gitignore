@@ -1,0 +1,17 @@
+# Build artifacts
+/target
+
+# Runtime persistence state (regenerated)
+data/
+*.wal
+*.snapshot
+*.tmp
+
+# TLS material — users generate their own with generate_certs.*
+certs/*.key
+certs/*.crt
+certs/*.pem
+
+# Editor / OS
+.DS_Store
+*.swp

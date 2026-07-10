@@ -1,0 +1,18 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 7777
+  },
+  "persistence": {
+    "enabled": true,
+    "mode": "wal",
+    "dataDir": "./data/master"
+  },
+  "replication": {
+    "role": "master",
+    "replicationPort": 8888
+  },
+  "tls": {
+    "enabled": false
+  }
+}

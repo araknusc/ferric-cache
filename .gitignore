@@ -1,0 +1,23 @@
+# Rust build artifacts
+/cache/target
+target/
+
+# Runtime persistence state (regenerated)
+cache/data/
+**/*.wal
+**/*.wal.[0-9]*
+**/*.snapshot
+*.tmp
+
+# TLS material — users generate their own with generate_certs.*
+cache/certs/*.key
+cache/certs/*.crt
+cache/certs/*.pem
+
+# Editor / OS
+.DS_Store
+*.swp
+
+# Internal planning/review docs (kept local, not published)
+PROJECT_REVIEW.md
+docs/LAUNCH_PLAN.md

@@ -1,0 +1,20 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 7777,
+    "maxConnections": 1000
+  },
+  "persistence": {
+    "enabled": true,
+    "mode": "wal",
+    "walSyncPolicy": "always",
+    "snapshotIntervalSecs": 60,
+    "maxWalSizeMb": 50,
+    "dataDir": "./dev-data"
+  },
+  "performance": {
+    "cleanupIntervalSecs": 10,
+    "maxMemoryMb": 512,
+    "workerThreads": 4
+  }
+}

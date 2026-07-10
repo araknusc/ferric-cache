@@ -1,0 +1,16 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 7777,
+    "maxConnections": 20000
+  },
+  "persistence": {
+    "enabled": false
+  },
+  "tls": {
+    "enabled": false
+  },
+  "security": {
+    "enabled": false
+  }
+}

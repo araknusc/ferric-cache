@@ -1,0 +1,41 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 7777,
+    "maxConnections": 10000
+  },
+  "persistence": {
+    "enabled": true,
+    "mode": "both",
+    "dataDir": "./data"
+  },
+  "security": {
+    "enabled": true,
+    "users": [
+      {
+        "username": "admin",
+        "password": "change-me-please",
+        "isAdmin": true
+      },
+      {
+        "username": "app",
+        "password": "another-strong-secret",
+        "isAdmin": false,
+        "rules": [
+          {
+            "permission": "readOnly",
+            "keyPatterns": ["cache:*", "session:*"]
+          },
+          {
+            "permission": "custom",
+            "commands": ["+SET", "+DEL"],
+            "keyPatterns": ["cache:*"]
+          }
+        ]
+      }
+    ]
+  },
+  "tls": {
+    "enabled": false
+  }
+}

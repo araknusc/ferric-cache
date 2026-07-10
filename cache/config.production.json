@@ -1,0 +1,20 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 7777,
+    "maxConnections": 50000
+  },
+  "persistence": {
+    "enabled": true,
+    "mode": "both",
+    "walSyncPolicy": "everysecond",
+    "snapshotIntervalSecs": 300,
+    "maxWalSizeMb": 500,
+    "dataDir": "/var/cache/data"
+  },
+  "performance": {
+    "cleanupIntervalSecs": 30,
+    "maxMemoryMb": 8192,
+    "workerThreads": 16
+  }
+}
