@@ -42,7 +42,7 @@ redis-cli -p 7777 SET hello world
 redis-cli -p 7777 GET hello
 ```
 
-Building requires Rust 1.78+ and a C toolchain (Lua 5.4 is vendored for `EVAL`).
+Building requires Rust 1.85+ and a C toolchain (Lua 5.4 is vendored for `EVAL`).
 
 ## Performance vs Redis
 

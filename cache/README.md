@@ -39,7 +39,7 @@ A multi-core-sharded, RESP-compatible cache server written in Rust.
 
 ## Prerequisites
 
-- **Rust 1.78+** (`rustup` recommended).
+- **Rust 1.85+** (`rustup` recommended).
 - **A C toolchain** (`cc`/`gcc`/MSVC). `mlua` vendors and compiles Lua 5.4 from
   source for `EVAL`, so a working C compiler is required to build.
 - Optional: `openssl` for `generate_certs.*`; `redis-server` + `redis-benchmark`

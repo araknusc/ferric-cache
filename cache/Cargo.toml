@@ -2,7 +2,7 @@
 name = "ferric-cache"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.78"
+rust-version = "1.85"
 description = "A high-performance, multi-core-sharded, RESP-compatible cache server in Rust"
 license = "Apache-2.0"
 repository = "https://github.com/araknusc/ferric-cache"
