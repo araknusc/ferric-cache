@@ -20,4 +20,4 @@ cache/certs/*.pem
 
 # Internal planning/review docs (kept local, not published)
 PROJECT_REVIEW.md
-docs/LAUNCH_PLAN.md
+docs/

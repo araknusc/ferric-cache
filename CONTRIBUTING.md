@@ -6,7 +6,8 @@ test, and submit changes.
 ## Repository layout
 
 The Cargo crate lives in [`cache/`](cache/). All build/test/run commands are
-issued from that directory. Planning notes live in [`docs/`](docs/).
+issued from that directory. See [`ARCHITECTURE.md`](ARCHITECTURE.md) for a
+tour of the code and the conventions for adding commands or subsystems.
 
 ## Prerequisites
 
