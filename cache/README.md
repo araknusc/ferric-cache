@@ -322,19 +322,37 @@ cargo bench
 
 ## Performance
 
-There are **no baked-in throughput numbers** here on purpose — the figures in
-earlier versions of this README were targets from the planning docs, not
-measurements. Run the benchmarks yourself:
+Real `redis-benchmark` head-to-head vs Redis 8.2.1 on an **AMD Ryzen 9 9950X
+(16C/32T)**, `-d 64`, in-memory (see [`benchmarks/README.md`](benchmarks/README.md)
+for full methodology and caveats):
+
+| Test | ferric-cache | Redis |
+|------|-------------:|------:|
+| Pipelined `-P16 -c50` — GET | **474K req/s** | 332K req/s |
+| Pipelined `-P16 -c50` — SET | **452K req/s** | 303K req/s |
+| Non-pipelined `-P1 -c50` — GET | **33.8K req/s** | 22.8K req/s |
+| High concurrency `-P1 -c500` — GET | **41.1K req/s** | 32.0K req/s |
+
+**Honest read:** ferric-cache leads all three regimes. The **pipelined** result
+(~40–55% ahead) is the most credible — with the network round-trip amortized it's
+a genuine server-CPU comparison. The non-pipelined and high-concurrency results
+also favor ferric-cache but are partly inflated by a network asymmetry
+(ferric-cache runs natively on the host; Redis is reached through Docker NAT), so
+treat those as directional. The earlier README's "280K/320K" figures were
+*targets*, not measurements, and have been removed.
+
+> The pipelined numbers are only this high because the server **batches all
+> replies from one read into a single socket write** and sets `TCP_NODELAY`;
+> writing/flushing per command (an earlier bug) cut pipelined throughput almost
+> in half.
+
+Reproduce it:
 
 ```bash
-cargo bench                        # in-process Criterion micro-benchmarks
-./benchmarks/compare_redis.sh      # head-to-head vs a real Redis (needs redis-benchmark)
+cargo bench                            # in-process Criterion micro-benchmarks
+./benchmarks/compare_redis.sh          # native redis-server + redis-benchmark
+./benchmarks/compare_redis_docker.sh   # Docker Redis (matches the numbers above)
 ```
-
-See [`benchmarks/README.md`](benchmarks/README.md) for methodology and a results
-table to fill in with your own hardware. The architectural bet is that sharding
-across cores beats a single command thread for concurrent disjoint-key
-workloads; the harness is there so you can confirm (or refute) that on your box.
 
 ## Development Status
 
