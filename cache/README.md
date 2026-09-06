@@ -39,7 +39,7 @@ A multi-core-sharded, RESP-compatible cache server written in Rust.
 
 ## Prerequisites
 
-- **Rust 1.75+** (`rustup` recommended).
+- **Rust 1.85+** (`rustup` recommended).
 - **A C toolchain** (`cc`/`gcc`/MSVC). `mlua` vendors and compiles Lua 5.4 from
   source for `EVAL`, so a working C compiler is required to build.
 - Optional: `openssl` for `generate_certs.*`; `redis-server` + `redis-benchmark`
@@ -138,7 +138,7 @@ Create a `config.json` file:
 
 Auth is **off by default** and there is **no hardcoded account**. To enable it,
 add a `security` section with one or more users (passwords are hashed with
-Argon2 at load time). See [`config.secure.json`](config.secure.json) for a full
+Argon2 at load time). See [`config.secure.example.json`](config.secure.example.json) for a full
 example.
 
 ```json
