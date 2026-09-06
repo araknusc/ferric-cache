@@ -1,15 +1,17 @@
-# CLAUDE.md
+# Architecture notes
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Orientation for contributors: where things live, how a request flows, and the conventions to follow when adding features.
 
 ## Repository Layout
 
-The project root (`C:\cs\PersonalProjects\Caching`) is **not** the Rust crate. It contains two planning documents (`initial_development_plan.md`, `next_phases_development_plan.md`) and a single Cargo crate at `cache/`. All build/test/run commands must be issued from `cache/`.
+The project root is **not** the Rust crate. It holds the license, contributing
+guide, and a single Cargo crate at `cache/`. All build/test/run commands must be
+issued from `cache/`.
 
 ```
-Caching/
-├── initial_development_plan.md      # Phase 1-5 design notes (historical)
-├── next_phases_development_plan.md  # Roadmap for clustering/HA/observability
+ferric-cache/
+├── LICENSE
+├── CONTRIBUTING.md
 └── cache/                            # The Rust crate — work happens here
 ```
 
@@ -105,7 +107,7 @@ Two different protocols live in this codebase:
 
 `PersistenceMode` (`src/persistence/mod.rs`) selects: `None` | `WAL` | `Snapshot` | `Both`. On startup, `load_from_persistence` first loads the snapshot, then replays WAL entries on top — order matters because WAL entries are deltas after the last snapshot. WAL sync policies (`Always`, `EverySecond`, `Manual`) trade durability for throughput. Background sync and snapshot tasks are spawned in `server::run`.
 
-WAL only logs `Set` and `Delete` Commands — see `execute_command`. Hash/List/Set/SortedSet writes are **not durable** today; this is a known limitation.
+The WAL logs every write command (strings, hashes, lists, sets, sorted sets, streams, and TTL changes) — see `is_write_command` in `commands.rs` and its regression test. Snapshots capture all value types via type-tagged reconstruction commands that go through `apply_write_command`.
 
 ### Clustering
 
@@ -117,7 +119,7 @@ WAL only logs `Set` and `Delete` Commands — see `execute_command`. Hash/List/S
 
 ### Security
 
-`AuthManager` and `ACLRule` (`src/security/`) are wired into the request path. When a `CacheServer` is built with `with_auth(Arc<AuthManager>)`, `execute_command` enforces three states: (1) unauthenticated connection issuing anything but PING/AUTH → `-NOAUTH`; (2) wrong AUTH password → `-WRONGPASS`; (3) authenticated user denied by `auth.check_permission` → `-NOPERM`. Per-connection state lives in a stack-local `ConnState { authed_user: Option<String> }` held by `handle_connection`/`handle_tls_connection`. JSON-config user provisioning is still TODO; today only the default `admin/admin123` user is seeded.
+`AuthManager` and `ACLRule` (`src/security/`) are wired into the request path. When a `CacheServer` is built with `with_auth(Arc<AuthManager>)`, `execute_command` enforces three states: (1) unauthenticated connection issuing anything but PING/AUTH → `-NOAUTH`; (2) wrong AUTH password → `-WRONGPASS`; (3) authenticated user denied by `auth.check_permission` → `-NOPERM`. Per-connection state lives in a stack-local `ConnState { authed_user: Option<String> }` held by `handle_connection`/`handle_tls_connection`. Users are provisioned from the `security.users` section of the JSON config (see `config.secure.json`); passwords are stored as Argon2id hashes. There is no default account.
 
 ### TLS
 
