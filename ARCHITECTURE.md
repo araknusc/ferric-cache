@@ -119,7 +119,7 @@ The WAL logs every write command (strings, hashes, lists, sets, sorted sets, str
 
 ### Security
 
-`AuthManager` and `ACLRule` (`src/security/`) are wired into the request path. When a `CacheServer` is built with `with_auth(Arc<AuthManager>)`, `execute_command` enforces three states: (1) unauthenticated connection issuing anything but PING/AUTH → `-NOAUTH`; (2) wrong AUTH password → `-WRONGPASS`; (3) authenticated user denied by `auth.check_permission` → `-NOPERM`. Per-connection state lives in a stack-local `ConnState { authed_user: Option<String> }` held by `handle_connection`/`handle_tls_connection`. Users are provisioned from the `security.users` section of the JSON config (see `config.secure.json`); passwords are stored as Argon2id hashes. There is no default account.
+`AuthManager` and `ACLRule` (`src/security/`) are wired into the request path. When a `CacheServer` is built with `with_auth(Arc<AuthManager>)`, `execute_command` enforces three states: (1) unauthenticated connection issuing anything but PING/AUTH → `-NOAUTH`; (2) wrong AUTH password → `-WRONGPASS`; (3) authenticated user denied by `auth.check_permission` → `-NOPERM`. Per-connection state lives in a stack-local `ConnState { authed_user: Option<String> }` held by `handle_connection`/`handle_tls_connection`. Users are provisioned from the `security.users` section of the JSON config (see `config.secure.example.json`); passwords are stored as Argon2id hashes. There is no default account.
 
 ### TLS
 

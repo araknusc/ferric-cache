@@ -138,7 +138,7 @@ Create a `config.json` file:
 
 Auth is **off by default** and there is **no hardcoded account**. To enable it,
 add a `security` section with one or more users (passwords are hashed with
-Argon2 at load time). See [`config.secure.json`](config.secure.json) for a full
+Argon2 at load time). See [`config.secure.example.json`](config.secure.example.json) for a full
 example.
 
 ```json

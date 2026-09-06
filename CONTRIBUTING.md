@@ -47,3 +47,8 @@ maintainer directly so a fix can be prepared before disclosure.
 
 By contributing, you agree that your contributions will be licensed under the
 [Apache License 2.0](LICENSE).
+
+## Conduct and security
+
+This project follows the [Code of Conduct](CODE_OF_CONDUCT.md). Security
+issues should be reported privately as described in [SECURITY.md](SECURITY.md).
