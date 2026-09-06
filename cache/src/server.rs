@@ -388,6 +388,9 @@ impl CacheServer {
             loop {
                 match tcp_listener.accept().await {
                     Ok((stream, addr)) => {
+                        // Disable Nagle: replies (especially single, unpipelined
+                        // ones) go out immediately instead of being coalesced.
+                        let _ = stream.set_nodelay(true);
                         let storage = Arc::clone(&storage_tcp);
                         let wal = wal_tcp.clone();
                         let replicator = replicator_tcp.clone();
@@ -430,6 +433,7 @@ impl CacheServer {
                     loop {
                         match tls_listener.accept().await {
                             Ok((stream, addr)) => {
+                                let _ = stream.set_nodelay(true);
                                 let storage = Arc::clone(&storage_tls);
                                 let wal = wal_tls.clone();
                                 let replicator = replicator_tls.clone();
@@ -510,7 +514,11 @@ async fn handle_connection(
                 let n = n?;
                 if n == 0 { return Ok(()); }
 
-                // Try to parse RESP commands from buffer
+                // Drain every complete RESP command in the buffer, batching all
+                // replies into one write. This is what makes pipelining fast: a
+                // client that sends N commands back-to-back gets N replies in a
+                // single socket write instead of one write+flush per command.
+                let mut out = BytesMut::new();
                 while !buffer.is_empty() {
                     let mut cursor = Cursor::new(&buffer[..]);
 
@@ -523,9 +531,7 @@ async fn handle_connection(
                                 Err(e) => Response::Error(format!("ERR {}", e)),
                             };
 
-                            let response_bytes = serialize_response(response);
-                            stream.write_all(&response_bytes).await?;
-                            stream.flush().await?;
+                            out.extend_from_slice(&serialize_response(response));
                             buffer.advance(consumed);
 
                             // After SUBSCRIBE creates the per-connection mailbox,
@@ -537,6 +543,10 @@ async fn handle_connection(
                         }
                         Err(_) => break, // incomplete; await more bytes
                     }
+                }
+
+                if !out.is_empty() {
+                    stream.write_all(&out).await?;
                 }
 
                 if buffer.len() > 1024 * 1024 {
@@ -585,6 +595,7 @@ where
                 let n = n?;
                 if n == 0 { return Ok(()); }
 
+                let mut out = BytesMut::new();
                 while !buffer.is_empty() {
                     let mut cursor = Cursor::new(&buffer[..]);
 
@@ -595,9 +606,7 @@ where
                                 Ok(cmd) => execute_command(cmd, &storage, &wal, &replicator, &auth, &mut conn, &ring, local_node_id.as_deref(), &pubsub, &versions, &lua).await,
                                 Err(e) => Response::Error(format!("ERR {}", e)),
                             };
-                            let response_bytes = serialize_response(response);
-                            stream.write_all(&response_bytes).await?;
-                            stream.flush().await?;
+                            out.extend_from_slice(&serialize_response(response));
                             buffer.advance(consumed);
 
                             if subs_rx.is_none() && conn.sub.rx.is_some() {
@@ -606,6 +615,10 @@ where
                         }
                         Err(_) => break,
                     }
+                }
+
+                if !out.is_empty() {
+                    stream.write_all(&out).await?;
                 }
 
                 if buffer.len() > 1024 * 1024 {
