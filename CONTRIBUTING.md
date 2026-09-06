@@ -11,7 +11,7 @@ tour of the code and the conventions for adding commands or subsystems.
 
 ## Prerequisites
 
-- Rust 1.75 or newer (`rustup` recommended).
+- Rust 1.78 or newer (`rustup` recommended).
 - A C toolchain (`cc`/`gcc`/MSVC) — `mlua` vendors Lua 5.4 and builds it from
   source, so a working C compiler is required.
 - Optionally `openssl` (for `generate_certs.*`) and `redis-server` +
